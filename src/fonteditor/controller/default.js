@@ -369,11 +369,17 @@ define(
                 }
             })
             .on('refresh', function (e) {
-                showTTF(program.ttfManager.get(), 1);
+                if (program.ttfManager.get()) {
+                    showTTF(program.ttfManager.get(), 1);
+                }
             })
             .on('moveleft', function (e) {
                 var editingIndex = program.viewer.getEditing();
-                if (program.editor.isVisible() && editingIndex > 0) {
+                if (program.editor.isVisible()) {
+                    if (editingIndex <= 0) {
+                        editingIndex = program.ttfManager.get().glyf.length;
+                    }
+
                     if (program.editor.isChanged() && !confirm('是否放弃保存当前编辑的字形?')) {
                         return;
                     }
@@ -391,10 +397,11 @@ define(
             })
             .on('moveright', function (e) {
                 var editingIndex = program.viewer.getEditing();
-                if (program.editor.isVisible()
-                    && editingIndex >= 0
-                    && editingIndex < program.ttfManager.get().glyf.length - 1
-                ) {
+                if (program.editor.isVisible()) {
+                    if (editingIndex >= program.ttfManager.get().glyf.length - 1) {
+                        editingIndex = -1;
+                    }
+
                     if (program.editor.isChanged() && !confirm('是否放弃保存当前编辑的字形?')) {
                         return;
                     }
